@@ -1,0 +1,324 @@
+"""
+CheckConfig is the specification of a check.
+"""
+type CheckConfig implements Node, Namespaced, Silenceable, Resource {
+  "The globally unique identifier of the check."
+  id: ID!
+
+  "namespace in which this check resides"
+  namespace: String!
+
+  "name is the unique identifier for a check"
+  name: String!
+
+  "metadata contains name, namespace, labels and annotations of the record"
+  metadata: ObjectMeta!
+
+  "command is the command to be executed."
+  command: String!
+
+  "CheckHooks is the configured list of check hooks for the check"
+  checkHooks: [HookList!]!
+
+  "Cron is the cron string at which the check should be run."
+  cron: String
+
+  """
+  EnvVars is the list of environment variables to set for the check's
+  execution environment.
+  """
+  envVars: [String!]!
+
+  "ExtendedAttributes store serialized arbitrary JSON-encoded data"
+  extendedAttributes: JSON!
+
+  "handlers are the event handler for the check (incidents and/or metrics)."
+  handlers: [Handler]!
+
+  """
+  HighFlapThreshold is the flap detection high threshold (% state change) for
+  the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  highFlapThreshold: Int
+
+  "Interval is the interval, in seconds, at which the check should be run."
+  interval: Int!
+
+  """
+  LowFlapThreshold is the flap detection low threshold (% state change) for
+  the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  lowFlapThreshold: Int
+
+  """
+  OutputOutputMetricFormat is the metric protocol that the check's output will be
+  expected to follow in order to be extracted.
+  """
+  outputMetricFormat: String
+
+  """
+  OutputOutputMetricHandlers is the list of event handlers that will respond to metrics
+  that have been extracted from the check.
+  """
+  outputMetricHandlers: [Handler]!
+
+  "proxyEntityName indicates the name of the entity representing an external resource"
+  proxyEntityName: String
+
+  "proxyRequests represents a request to execute a proxy check."
+  proxyRequests: ProxyRequests
+
+  "Publish indicates if check requests are published for the check"
+  publish: Boolean!
+
+  "RuntimeAssets are a list of assets required to execute check."
+  runtimeAssets: [Asset]!
+
+  "RoundRobin enables round-robin scheduling if set true."
+  roundRobin: Boolean!
+
+  "isSilenced return true if the entity has any silences associated with it."
+  isSilenced: Boolean!
+
+  """
+  All silences matching the entity's subscriptions and where the silence
+  matches all checks.
+  """
+  silences: [Silenced!]!
+
+  "STDIN indicates if the check command accepts JSON via stdin from the agent"
+  stdin: Boolean!
+
+  "Subdue represents one or more time windows when the check should be subdued."
+  subdue: TimeWindowWhen
+
+  "Subscriptions is the list of subscribers for the check."
+  subscriptions: [String]!
+
+  """
+  Timeout is the timeout, in seconds, at which the check has to run.
+  """
+  timeout: Int!
+
+  """
+  TTL represents the length of time in seconds for which a check result is valid.
+  """
+  ttl: Int!
+
+  """
+  toJSON returns a REST API compatible representation of the resource. Handy for
+  sharing snippets that can then be imported with `sensuctl create`.
+  """
+  toJSON: JSON!
+}
+
+"""
+A Check is a check specification and optionally the results of the check's
+execution.
+"""
+type Check implements Silenceable, Resource {
+  "id of the check's configuration"
+  nodeId: ID!
+
+  "name is the unique identifier for a check"
+  name: String!
+
+  "metadata contains name, namespace, labels and annotations of the record"
+  metadata: ObjectMeta!
+
+  "command is the command to be executed."
+  command: String!
+
+  "CheckHooks is the list of check hooks for the check"
+  checkHooks: [HookList!]!
+
+  """
+  envVars is the list of environment variables to set for the check's
+  execution environment.
+  """
+  envVars: [String!]!
+
+  "ExtendedAttributes store serialized arbitrary JSON-encoded data"
+  extendedAttributes: JSON!
+
+  "handlers are the event handler for the check (incidents and/or metrics)."
+  handlers: [Handler]!
+
+  """
+  HighFlapThreshold is the flap detection high threshold (% state change) for
+  the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  highFlapThreshold: Int
+
+  "Interval is the interval, in seconds, at which the check should be run."
+  interval: Int!
+
+  "Cron is the cron string at which the check should be run."
+  cron: String
+
+  """
+  LowFlapThreshold is the flap detection low threshold (% state change) for
+  the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  lowFlapThreshold: Int
+
+  """
+  OutputOutputMetricFormat is the metric protocol that the check's output will be
+  expected to follow in order to be extracted.
+  """
+  outputMetricFormat: String
+
+  """
+  OutputOutputMetricHandlers is the list of event handlers that will respond to metrics
+  that have been extracted from the check.
+  """
+  outputMetricHandlers: [Handler]!
+
+  "proxyEntityName indicates the name of the entity representing an external resource"
+  proxyEntityName: String
+
+  "proxyRequests represents a request to execute a proxy check."
+  proxyRequests: ProxyRequests
+
+  "Publish indicates if check requests are published for the check"
+  publish: Boolean!
+
+  "RuntimeAssets are a list of assets required to execute check."
+  runtimeAssets: [Asset]!
+
+  "RoundRobin enables round-robin scheduling if set true."
+  roundRobin: Boolean!
+
+  "Subscriptions is the list of subscribers for the check."
+  subscriptions: [String]!
+
+  "STDIN indicates if the check command accepts JSON via stdin from the agent"
+  stdin: Boolean!
+
+  "Subdue represents one or more time windows when the check should be subdued."
+  subdue: TimeWindowWhen
+
+  "Duration of execution"
+  duration: Float
+
+  "Executed describes the time in which the check request was executed"
+  executed: DateTime!
+
+  "History is the check state history."
+  history(first: Int = 21): [CheckHistory]!
+
+  "Issued describes the time in which the check request was issued"
+  issued: DateTime!
+
+  "Output from the execution of Command"
+  output: String!
+
+  "State provides handlers with more information about the state change"
+  state: String!
+
+  "Status is the exit status code produced by the check"
+  status: Uint!
+
+  """
+  TotalStateChange indicates the total state change percentage for the
+  check's history
+  """
+  totalStateChange: Int
+
+  """
+  Hooks describes the results of multiple hooks; if event is associated to hook
+  execution.
+  """
+  hooks: [Hook]
+
+  "Silenced is a list of silenced entry ids (subscription and check name)"
+  silenced: [String]!
+
+  "isSilenced return true if the entity has any silences associated with it."
+  isSilenced: Boolean!
+
+  """
+  All silences matching the entity's subscriptions and where the silence
+  matches all checks.
+  """
+  silences: [Silenced!]!
+
+  """
+  LastOK displays last time this check's status was set to zero.
+  """
+  lastOK: DateTime
+
+  """
+  Occurrences indicates the number of times an event has occurred for a
+  client/check pair with the same check status.
+  """
+  occurrences: Int!
+
+  """
+  OccurrencesWatermark indicates the high water mark tracking number of
+  occurrences at the current severity.
+  """
+  occurrencesWatermark: Int!
+
+  """
+  Timeout is the timeout, in seconds, at which the check has to run.
+  """
+  timeout: Int!
+
+  """
+  TTL represents the length of time in seconds for which a check result is valid.
+  """
+  ttl: Int!
+
+  """
+  toJSON returns a REST API compatible representation of the resource. Handy for
+  sharing snippets that can then be imported with `sensuctl create`.
+  """
+  toJSON: JSON!
+}
+
+"""
+CheckHistory is a record of a check execution and its status
+"""
+type CheckHistory {
+  "Status is the exit status code produced by the check."
+  status: Uint!
+
+  "Executed describes the time in which the check request was executed"
+  executed: DateTime!
+}
+
+"""
+A ProxyRequests represents a request to execute a proxy check.
+"""
+type ProxyRequests {
+  """
+  entityAttributes store serialized arbitrary JSON-encoded data to match
+  entities in the registry.
+  """
+  entityAttributes: [JSON!]!
+
+  """
+  splay indicates if proxy check requests should be splayed, published evenly
+  over a window of time.
+  """
+  splay: Boolean!
+
+  """
+  splayCoverage is the percentage used for proxy check request splay
+  calculation.
+  """
+  splayCoverage: Int!
+}
+
+"A connection to a sequence of records."
+type CheckConfigConnection {
+  nodes: [CheckConfig!]!
+  pageInfo: OffsetPageInfo!
+}
+
+"Describes ways in which a list of checks can be ordered."
+enum CheckListOrder {
+  NAME
+  NAME_DESC
+}

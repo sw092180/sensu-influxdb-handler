@@ -1,0 +1,69 @@
+"""
+Silenced is the representation of a silence entry.
+"""
+type Silenced implements Node, Namespaced, Resource {
+  "The globally unique identifier for the record."
+  id: ID!
+
+  "The namespace the object belongs to."
+  namespace: String!
+
+  "Name is the combination of subscription and check name (subscription:checkname)"
+  name: String!
+
+  "metadata contains name, namespace, labels and annotations of the record"
+  metadata: ObjectMeta!
+
+  "Expire is the number of seconds the entry will live"
+  expire: Int!
+
+  "Exact time at which the silenced entry will expire"
+  expires: DateTime
+
+  """
+  ExpireOnResolve defaults to false, clears the entry on resolution when set
+  to true
+  """
+  expireOnResolve: Boolean!
+
+  "Creator is the author of the silenced entry"
+  creator: String!
+
+  "Check is the name of the check event to be silenced."
+  check: CheckConfig
+
+  "Reason is used to provide context to the entry"
+  reason: String
+
+  "Subscription is the name of the subscription to which the entry applies."
+  subscription: String
+
+  "Begin is a timestamp at which the silenced entry takes effect."
+  begin: DateTime
+
+  """
+  toJSON returns a REST API compatible representation of the resource. Handy for
+  sharing snippets that can then be imported with `sensuctl create`.
+  """
+  toJSON: JSON!
+}
+
+"Silenceable describes resources that can be silenced"
+interface Silenceable {
+  isSilenced: Boolean!
+  silences: [Silenced!]!
+}
+
+"A connection to a sequence of records."
+type SilencedConnection {
+  nodes: [Silenced!]!
+  pageInfo: OffsetPageInfo!
+}
+
+"Describes ways in which a list of silences can be ordered."
+enum SilencesListOrder {
+  ID
+  ID_DESC
+  BEGIN
+  BEGIN_DESC
+}

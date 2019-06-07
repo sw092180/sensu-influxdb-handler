@@ -1,0 +1,35 @@
+"""
+Asset defines an archive, an agent will install as a dependency for a check.
+"""
+type Asset implements Node, Namespaced, Resource {
+  "The globally unique identifier of the record"
+  id: ID!
+
+  "Namespace in which this record resides"
+  namespace: String!
+
+  "Name is the unique identifier for an asset"
+  name: String
+
+  "metadata contains name, namespace, labels and annotations of the record"
+  metadata: ObjectMeta!
+
+  "URL is the location of the asset"
+  url: String
+
+  "Sha512 is the SHA-512 checksum of the asset"
+  sha512: String
+
+  """
+  Filters are a collection of sensu queries, used by the system to determine
+  if the asset should be installed. If more than one filter is present the
+  queries are joined by the "AND" operator.
+  """
+  filters: [String]
+
+  """
+  toJSON returns a REST API compatible representation of the resource. Handy for
+  sharing snippets that can then be imported with `sensuctl create`.
+  """
+  toJSON: JSON!
+}

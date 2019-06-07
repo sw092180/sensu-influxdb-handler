@@ -1,0 +1,77 @@
+"""
+An Event is the encapsulating type sent across the Sensu websocket transport.
+"""
+type Event implements Node, Namespaced, Silenceable, Resource {
+  "The globally unique identifier of the record."
+  id: ID!
+
+  "namespace in which this record resides"
+  namespace: String!
+
+  "metadata contains name, namespace, labels and annotations of the record"
+  metadata: ObjectMeta!
+
+  "Timestamp is the time in seconds since the Epoch."
+  timestamp: DateTime!
+
+  "Entity describes the entity in which the event occurred."
+  entity: Entity
+
+  """
+  Check describes the result of a check; if event is associated to check
+  execution.
+  """
+  check: Check
+
+  """
+  Hooks describes the results of multiple hooks; if event is associated to hook
+  execution.
+  """
+  hooks: [Hook!]
+
+  "isIncident determines if an event indicates an incident."
+  isIncident: Boolean!
+
+  """
+  isNewIncident returns true if the event is an incident but it's previous
+  iteration was OK.
+  """
+  isNewIncident: Boolean!
+
+  "isResolution returns true if an event has just transitions from an incident."
+  isResolution: Boolean!
+
+  """
+  wasSilenced reflects whether the event was silenced when passing through the pipeline.
+  """
+  wasSilenced: Boolean!
+
+  "isSilenced determines if an event has any silenced entries."
+  isSilenced: Boolean!
+
+  "all current silences matching the check and entity's subscriptions."
+  silences: [Silenced!]!
+
+  "Silenced is a list of silenced entry ids (subscription and check name)"
+  silenced: [String]
+
+  """
+  toJSON returns a REST API compatible representation of the resource. Handy for
+  sharing snippets that can then be imported with `sensuctl create`.
+  """
+  toJSON: JSON!
+}
+
+"A connection to a sequence of records."
+type EventConnection {
+  nodes: [Event!]!
+  pageInfo: OffsetPageInfo!
+}
+
+"Describes ways in which a list of events can be ordered."
+enum EventsListOrder {
+  LASTOK
+  NEWEST
+  OLDEST
+  SEVERITY
+}

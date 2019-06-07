@@ -1,0 +1,280 @@
+"""
+The root query for implementing GraphQL mutations.
+"""
+type Mutation {
+
+  #
+  # Generic
+  #
+
+  "Create or overrwrite resource from given wrapped resource."
+  putWrapped(raw: String!): PutWrappedPayload!
+
+  #
+  # Checks
+  #
+
+  "Creates a new check."
+  createCheck(input: CreateCheckInput!): CreateCheckPayload
+
+  "Updates given check."
+  updateCheck(input: UpdateCheckInput!): UpdateCheckPayload
+
+  "Updates given check."
+  executeCheck(input: ExecuteCheckInput!): ExecuteCheckPayload
+
+  "Removes given check."
+  deleteCheck(input: DeleteRecordInput!): DeleteRecordPayload
+
+  #
+  # Entities
+  #
+
+  "Removes a given entity."
+  deleteEntity(input: DeleteRecordInput!): DeleteRecordPayload
+
+  #
+  # Events
+  #
+
+  "Resolves an event."
+  resolveEvent(input: ResolveEventInput!): ResolveEventPayload
+
+  "Deletes an event."
+  deleteEvent(input: DeleteRecordInput!): DeleteRecordPayload
+
+  #
+  # Handlers
+  #
+
+  "Removes given handler."
+  deleteHandler(input: DeleteRecordInput!): DeleteRecordPayload
+
+  #
+  # Silences
+  #
+
+  "Creates a silence."
+  createSilence(input: CreateSilenceInput!): CreateSilencePayload
+
+  "Removes given silence."
+  deleteSilence(input: DeleteRecordInput!): DeleteRecordPayload
+}
+
+#
+# Generic
+#
+
+type PutWrappedPayload {
+  "The newly created / updated resource"
+  node: Node
+
+  """
+  Includes any failed preconditions or unrecoverable errors that occurred while
+  executing the mutation.
+  """
+  errors: [Error!]!
+}
+
+"""
+Generic container for deleted record payload.
+"""
+type DeleteRecordPayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "ID of the deleted resource"
+  deletedId: ID!
+}
+
+"""
+Generic input used when deleting records.
+"""
+input DeleteRecordInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "Global ID of the check to update."
+  id: ID!
+}
+
+#
+# CreateCheckMutation
+#
+
+input CheckConfigInputs {
+
+  "command to run."
+  command: String
+
+  "interval is the time interval, in seconds, in which the check should be run."
+  interval: Int
+
+  """
+	lowFlapThreshold is the flap detection low threshold (% state change) for
+	the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  lowFlapThreshold: Int
+
+  """
+	highFlapThreshold is the flap detection high threshold (% state change) for
+	the check. Sensu uses the same flap detection algorithm as Nagios.
+  """
+  highFlapThreshold: Int
+
+	"subscriptions refers to the list of subscribers for the check."
+  subscriptions: [String!]
+
+	"handlers are the event handler for the check (incidents and/or metrics)."
+  handlers: [String!]
+
+	"publish indicates if check requests are published for the check"
+  publish: Boolean
+
+	"Provide a list of valid assets that are required to execute the check."
+  assets: [String!]
+
+}
+
+input CreateCheckInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "namespace the resulting resource will belong to."
+  namespace: String = "default"
+
+  "name of the resulting check."
+  name: String!
+
+  "properties of the check"
+  props: CheckConfigInputs!
+}
+
+type CreateCheckPayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "The newly created check."
+  check: CheckConfig!
+}
+
+#
+# UpdateCheckMutation
+#
+
+input UpdateCheckInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "Global ID of the check to update."
+  id: ID!
+
+  "properties of the check"
+  props: CheckConfigInputs!
+}
+
+type UpdateCheckPayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "The updated check."
+  check: CheckConfig!
+}
+
+#
+# ExecuteCheckMutation
+#
+
+input ExecuteCheckInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "Global ID of the check to update."
+  id: ID!
+
+  "Subscriptions is an optional list of subscriptions to target."
+  subscriptions: [String!] = []
+
+  "Reason is used to provide context to the adho request."
+  reason: String = ""
+}
+
+type ExecuteCheckPayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  """
+  Includes any failed preconditions or unrecoverable errors that occurred while
+  executing the mutation.
+  """
+  errors: [Error!]!
+}
+
+#
+# ResolveEventMutation
+#
+
+input ResolveEventInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "Global ID of the event to resolve."
+  id: ID!
+
+  "The source of the resolve request"
+  source: String = "GraphQL"
+}
+
+type ResolveEventPayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "The event that was resolved."
+  event: Event!
+}
+
+#
+# CreateSilenceMutation
+#
+
+input CreateSilenceInput {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "namespace the resulting resource will belong to."
+  namespace: String = "default"
+
+  "check associated with the silenced entry; optional."
+  check: String
+
+  "subscription associated with the silenced entry; optional."
+  subscription: String
+
+  "properties of the silence"
+  props: SilenceInputs!
+}
+
+input SilenceInputs {
+  "Reason is used to provide context to the entry"
+  reason: String
+
+  "Begin is a timestamp at which the silenced entry takes effect."
+  begin: DateTime
+
+  """
+  ExpireOnResolve defaults to false, clears the entry on resolution when set
+  to true
+  """
+  expireOnResolve: Boolean = true
+
+  "Expire is the number of seconds the entry will live"
+  expire: Int = -1
+}
+
+type CreateSilencePayload {
+  "A unique identifier for the client performing the mutation."
+  clientMutationId: String
+
+  "The newly created silence."
+  silence: Silenced!
+}

@@ -1,0 +1,9 @@
+"""
+User describes an operator in the system
+"""
+type User {
+  username: String!
+  groups: [String!]!
+  disabled: Boolean!
+  hasPassword: Boolean!
+}

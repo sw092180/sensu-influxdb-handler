@@ -1,0 +1,197 @@
+"""
+Namespaced represents an object that belongs to a unique namespace.
+"""
+interface Namespaced {
+  "The namespace the object belongs to."
+  namespace: String!
+}
+
+"""
+Represents a virtual cluster
+"""
+type Namespace implements Node {
+  "The globally unique identifier of the check."
+  id: ID!
+
+  "Name is the unique identifier for a namespace."
+  name: String!
+
+  #
+  # NOTE:
+  #
+  # We could implement a different container that exposes the following fields.
+  # Eg. a "Scope" type or something of in that vein.
+  #
+
+  "All check configurations associated with the namespace."
+  checks(
+    offset: Int = 0,
+    "Limit adds optional limit to the number of entries returned."
+    limit: Int = 10,
+    "OrderBy adds optional order to the records retrieved."
+    orderBy: CheckListOrder = NAME_DESC
+    "DEPRECATED: Please use the filters argument instead."
+    filter: String = "",
+    """
+    Filters reduces the set using given arbitrary expression[s]; expressions
+    take on the form KEY: VALUE. The accepted key(s) are: subscription &
+    published.
+
+    Eg.
+
+    subscription:unix
+    published:true
+    """
+    filters: [String!] = [],
+  ): CheckConfigConnection!
+
+  "All entities associated with the namespace."
+  entities(
+    offset: Int = 0,
+    "Limit adds optional limit to the number of entries returned."
+    limit: Int = 10,
+    "OrderBy adds optional order to the records retrieved."
+    orderBy: EntityListOrder = ID_DESC
+    "DEPRECATED: Please use the filters argument instead."
+    filter: String = "",
+    """
+    Filters reduces the set using given arbitrary expression[s]; expressions
+    take on the form KEY: VALUE. The accepted key(s) are: subscription &
+    class.
+
+    Eg.
+
+    subscription:unix
+    class:proxy
+    """
+    filters: [String!] = [],
+  ): EntityConnection!
+
+  "All events associated with the namespace."
+  events(
+    offset: Int = 0,
+    "Limit adds optional limit to the number of entries returned."
+    limit: Int = 10,
+    "OrderBy adds optional order to the records retrieved."
+    orderBy: EventsListOrder = SEVERITY
+    "DEPRECATED: Please use the filters argument instead."
+    filter: String = "",
+    """
+    Filters reduces the set using given arbitrary expression[s]; expressions
+    take on the form KEY: VALUE. The accepted key(s) are: status, check, entity,
+    & silenced.
+
+    Eg.
+
+    status:passing
+    status:warning
+    status:incident
+    check:check-disk
+    entity:venice
+    silenced:true
+    """
+    filters: [String!] = [],
+  ): EventConnection!
+
+  "All handlers associated with the namespace."
+  handlers(
+    offset: Int = 0,
+    "Limit adds an optional limit to the number of handlers returned."
+    limit: Int = 10,
+    "Orderby adds an optional order to the records retrieved."
+    orderBy: HandlerListOrder = NAME_DESC,
+    "DEPRECATED: Please use the filters argument instead."
+    filter: String = "",
+    """
+    Filters reduces the set using given arbitrary expression[s]; expressions
+    take on the form KEY: VALUE. The accepted key(s) are: type.
+
+    Eg.
+
+    type:pipe
+    type:tcp
+    type:udp
+    type:set
+    """
+    filters: [String!] = [],
+  ): HandlerConnection!
+
+  "All silences associated with the namespace."
+  silences(
+    offset: Int = 0
+    "Limit adds optional limit to the number of entries returned."
+    limit: Int = 10
+    "OrderBy adds optional order to the records retrieved."
+    orderBy: SilencesListOrder = ID_DESC
+    "DEPRECATED: Please use the filters argument instead."
+    filter: String = "",
+    """
+    Filters reduces the set using given arbitrary expression[s]; expressions
+    take on the form KEY: VALUE. The accepted key(s) are: check & subscription.
+
+    Eg.
+
+    check:check-disk
+    subscription:unix
+    """
+    filters: [String!] = [],
+  ): SilencedConnection!
+
+  "All subscriptions in use in the namespace."
+  subscriptions(
+    "Omit entity subscriptions from set."
+    omitEntity: Boolean = false
+    "OrderBy adds optional order to the records retrieved."
+    orderBy: SubscriptionSetOrder = OCCURRENCES
+  ): SubscriptionSet!
+
+  #
+  # Icon & colour are pulled over from the previous namespace implementation.
+  # Retained in the short term to keep implementation of frontend as straight
+  # forward as possible.
+  #
+  # Likely to be deprecated.
+  #
+
+  "IconId. Experimental. Use graphical interfaces as symbolic reference to organization"
+  iconId: Icon!
+
+  "ColourId. Experimental. Use graphical interfaces as symbolic reference to namespace"
+  colourId: MutedColour!
+}
+
+"Describes ways in which a set of subscriptions can be ordered."
+enum SubscriptionSetOrder {
+  ALPHA_ASC
+  ALPHA_DESC
+  OCCURRENCES
+}
+
+"Describes a graphical element that can be used to distinguish a resource."
+enum Icon {
+  BRIEFCASE
+  DONUT
+  EMOTICON
+  ESPRESSO
+  EXPLORE
+  FIRE
+  HALFHEART
+  HEART
+  MUG
+  POLYGON
+  VISIBILITY
+}
+
+"""
+Describes a color from a muted palette that can be used to distinguish a
+resource.
+"""
+enum MutedColour {
+  BLUE
+  GRAY
+  GREEN
+  ORANGE
+  PINK
+  PURPLE
+  YELLOW
+}
