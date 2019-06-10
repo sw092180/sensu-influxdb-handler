@@ -25,6 +25,7 @@ var (
 )
 
 func main() {
+	fmt.Printf("THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE,THIS IS NEW CODE\n")
 	rootCmd := configureRootCommand()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
